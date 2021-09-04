@@ -1,0 +1,2 @@
+# dedicatedEmailSender
+MERN based Email
