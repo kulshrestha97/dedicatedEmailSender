@@ -34,9 +34,78 @@ const getAll = async (req, res, next) => {
   }
 };
 
-const getByDate = (req, res, next) => {};
+const getByDate = (req, res, next) => {
+  const { userid, date } = req.body;
+  let transactions;
+  let userExists;
+  const dateFormatted = new Date(date);
 
-const getBySubject = (req, res, next) => {};
+  try {
+    userExists = await User.find({ userid: userid }, "userid");
+  } catch (error) {
+    next(new HttpError("Cannot perform the operation, try again later", 500));
+  }
+  if (userExists.length === 0) {
+    next(
+      new HttpError(
+        "User doesn't exists, please provide valid credentials",
+        500
+      )
+    );
+    return;
+  }
+  try {
+    transactions = await Transaction.find({
+      time: dateFormatted,
+      userid: userid,
+    });
+  } catch (error) {
+    next(new HttpError("Cannot perform the operation, try again later", 500));
+  }
+  if (transactions.length === 0) {
+    res.json({ message: "No transactions till now!" }).status(200);
+    return;
+  } else {
+    res.json({ transactions }).status(200);
+    return;
+  }
+};
+
+const getBySubject = (req, res, next) => {
+  const { userid, subject } = req.body;
+  let transactions;
+  let userExists;
+
+  try {
+    userExists = await User.find({ userid: userid }, "userid");
+  } catch (error) {
+    next(new HttpError("Cannot perform the operation, try again later", 500));
+  }
+  if (userExists.length === 0) {
+    next(
+      new HttpError(
+        "User doesn't exists, please provide valid credentials",
+        500
+      )
+    );
+    return;
+  }
+  try {
+    transactions = await Transaction.find({
+      subject: subject,
+      userid: userid,
+    });
+  } catch (error) {
+    next(new HttpError("Cannot perform the operation, try again later", 500));
+  }
+  if (transactions.length === 0) {
+    res.json({ message: "No transactions till now!" }).status(200);
+    return;
+  } else {
+    res.json({ transactions }).status(200);
+    return;
+  }
+};
 
 const sendEmail = (req, res, next) => {};
 
